@@ -41,6 +41,10 @@ export class SOCKETIO {
 
                 for (const group of groups) {
                     socket.join(`${group.id}`);
+                    socket.broadcast.to(`${group.id}`).emit('new_user_online', {
+                        userId,
+                        group: group.id
+                    });
                 }
 
             });
@@ -92,6 +96,13 @@ export class SOCKETIO {
 
             socket.on("disconnect", () => {
                 console.log(`User disconnected: ${socket.id}`);
+
+                const userDisconnect = this.clientConnected.find(o => o.socket === socket.id);
+
+                const rooms = Object.keys(socket.rooms);
+                rooms.forEach(room => {
+                    socket.to(room).emit("userDisconnected", { userId: userDisconnect?.user });
+                });
                 this.clientConnected = this.clientConnected.filter(obj => obj.socket !== socket.id);
             });
         });
