@@ -95,28 +95,26 @@ export class SOCKETIO {
             })
 
             socket.on("logout", async () => {
-                console.log(`User disconnected: ${socket.id}`);
-
                 const userDisconnect = this.clientConnected.find(o => o.socket === socket.id);
 
-                const rooms = Object.keys(socket.rooms);
-                rooms.forEach(room => {
+                socket.rooms.forEach(room => {
                     socket.to(room).emit("userDisconnected", { userId: userDisconnect?.user });
                 });
                 this.clientConnected = this.clientConnected.filter(obj => obj.socket !== socket.id);
                 socket.disconnect(true);
-            })
+            });
 
             socket.on("disconnect", () => {
                 console.log(`User disconnected: ${socket.id}`);
 
                 const userDisconnect = this.clientConnected.find(o => o.socket === socket.id);
 
-                const rooms = Object.keys(socket.rooms);
-                rooms.forEach(room => {
-                    socket.to(room).emit("userDisconnected", { userId: userDisconnect?.user });
-                });
-                this.clientConnected = this.clientConnected.filter(obj => obj.socket !== socket.id);
+                if (userDisconnect) {
+                    socket.rooms.forEach(room => {
+                        socket.to(room).emit("userDisconnected", { userId: userDisconnect?.user });
+                    });
+                    this.clientConnected = this.clientConnected.filter(obj => obj.socket !== socket.id);
+                }
             });
         });
     }
