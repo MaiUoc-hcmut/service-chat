@@ -36,7 +36,7 @@ export class SOCKETIO {
 
                 // Join room when user online
                 const groups = await Group.find({
-                    members: userId
+                    "members.id": [userId]
                 });
 
                 for (const group of groups) {
