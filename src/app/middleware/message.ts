@@ -21,7 +21,7 @@ class CheckingMessage {
             if (body.user && body.id_group) {
                 const group = await Group.findOne({
                     individual: true,
-                    members: {
+                    'members.id': {
                         $all: [author, body.user]
                     }
                 });
