@@ -3,7 +3,6 @@ const Group = require('../../db/model/group');
 
 import { Request, Response, NextFunction } from 'express';
 import { socketInstance } from "../..";
-import { log } from 'console';
 
 const axios = require('axios');
 
@@ -28,7 +27,52 @@ class GroupController {
     // [GET] /groups/:groupId
     getGroup = async (req: Request, res: Response, _next: NextFunction) => {
         try {
+            const id_group = req.params.groupId;
+            const group = await Group.findOne({
+                id: id_group
+            });
 
+            if (!group) {
+                return res.status(404).json({
+                    message: "Group does not exist!"
+                });
+            }
+
+            const members: {
+                id: string,
+                name: string,
+                email: string,
+                avatar: string
+            }[] = [];
+
+            for (const member of group.members) {
+                const student = await this.getUserFromAPI(`${process.env.BASE_URL_USER_LOCAL}/student/${member.id}`);
+                if (student) {
+                    members.push({
+                        id: member.id,
+                        name: student.data.name,
+                        email: student.data.email,
+                        avatar: student.data.avatar
+                    });
+                    continue;
+                }
+
+                const teacher = await this.getUserFromAPI(`${process.env.BASE_URL_USER_LOCAL}/teacher/get-teacher-by-id/${member}`);
+                if (teacher) {
+                    members.push({
+                        id: member.id,
+                        name: teacher.data.name,
+                        email: teacher.data.email,
+                        avatar: teacher.data.avatar
+                    });
+                    continue;
+                }
+            }
+
+            res.status(200).json({
+                group,
+                members
+            });
         } catch (error: any) {
             console.log(error.message);
             res.status(500).json({

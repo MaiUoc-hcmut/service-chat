@@ -40,6 +40,10 @@ router.route('/:groupId/update')
     );
 
 router.route('/:groupId')
+    .get(
+        Authorize.verifyUser,
+        GroupController.getGroup
+    )
     .delete(
         Authorize.verifyUser,
         CheckingGroup.checkDeleteGroup,
