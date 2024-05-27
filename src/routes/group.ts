@@ -39,6 +39,12 @@ router.route('/:groupId/update')
         GroupController.updateGroup
     );
 
+router.route('/list')
+    .get(
+        Authorize.verifyUser, 
+        GroupController.getGroupsOfUser
+    );
+
 router.route('/:groupId')
     .get(
         Authorize.verifyUser,
@@ -49,12 +55,6 @@ router.route('/:groupId')
         Authorize.verifyUser,
         CheckingGroup.checkDeleteGroup,
         GroupController.deleteGroup
-    );
-
-router.route('/list')
-    .get(
-        Authorize.verifyUser, 
-        GroupController.getGroupsOfUser
     );
 
 module.exports = router;
