@@ -32,6 +32,20 @@ router.route('/:groupId/leave-group')
         GroupController.userLeaveGroup
     );
 
+router.route('/:groupId/update')
+    .put(
+        Authorize.verifyUser,
+        CheckingGroup.checkUpdateGroup,
+        GroupController.updateGroup
+    );
+
+router.route('/:groupId')
+    .delete(
+        Authorize.verifyUser,
+        CheckingGroup.checkDeleteGroup,
+        GroupController.deleteGroup
+    );
+
 router.route('/list')
     .get(
         Authorize.verifyUser, 

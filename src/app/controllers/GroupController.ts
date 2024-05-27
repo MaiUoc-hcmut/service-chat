@@ -296,6 +296,56 @@ class GroupController {
             });
         }
     }
+
+    // [PUT] /groups/:groupId/update
+    updateGroup = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            let body = req.body.data;
+            if (typeof body === "string") {
+                body = JSON.parse(body);
+            }
+
+            const id_group = req.params.groupId;
+
+            const group = await Group.findOneAndUpdate({
+                id: id_group
+            }, {
+                ...body
+            }, {
+                new: true
+            });
+
+            res.status(200).json(group);
+        } catch (error: any) {
+            console.log(error.message);
+            res.status(500).json({
+                error,
+                message: error.message
+            });
+        }
+    }
+
+    // [DELETE] /group/:groupId
+    deleteGroup = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            const id_group = req.params.groupId;
+
+            await Group.deleteOne({
+                id: id_group
+            });
+
+            res.status(200).json({
+                message: "Group has been deleted",
+                id: id_group
+            });
+        } catch (error: any) {
+            console.log(error.message);
+            res.status(500).json({
+                error,
+                message: error.message
+            });
+        }
+    }
 }
 
 

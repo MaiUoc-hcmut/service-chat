@@ -172,6 +172,62 @@ class CheckingGroup {
             next(createError.InternalServerError(error.message));
         }
     }
+
+    checkUpdateGroup = async (req: Request, _res: Response, next: NextFunction) => {
+        try {
+            const id_user = req.user?.user.data.id;
+
+            const group = await Group.findOne({
+                id: req.params.groupId
+            });
+
+            if (!group) {
+                let error = "This group does not exist!";
+                return next(createError.NotFound(error));
+            }
+
+            const userInGroup = group.members.find((u: any) => u.id === id_user);
+            if (!userInGroup) {
+                let error = "You are not in this group to make an update!";
+                return next(createError.Unauthorized(error));
+            }
+            next();
+        } catch (error: any) {
+            console.log(error.message);
+            next(createError.InternalServerError(error.message));
+        }
+    }
+
+    checkDeleteGroup = async (req: Request, _res: Response, next: NextFunction) => {
+        try {
+            const id_group = req.params.groupId;
+            const id_user = req.user?.user.data.id;
+
+            const group = await Group.findOne({
+                id: id_group
+            });
+
+            if (!group) {
+                let error = "This group does not exist!";
+                return next(createError.NotFound(error));
+            }
+
+            if (!group.admins.includes(id_user)) {
+                let error = "You are not admin of this group so you do not have permision to delete it!";
+                return next(createError.Unauthorized(error));
+            }
+
+            if (group.members.length > 1) {
+                let error = "You can not delete group if still have member, make sure you remove all others member before delete group!";
+                return next(createError.BadRequest(error));
+            }
+
+            next();
+        } catch (error: any) {
+            console.log(error.message);
+            next(createError.InternalServerError(error.message));
+        }
+    }
 }
 
 
