@@ -111,7 +111,8 @@ class CheckingGroup {
                 return next(createError.Unauthorized(error));
             }
             for (const user of body.users) {
-                if (group.members.includes(user)) {
+                const userToAddInGroup = group.members.find((u: any) => u.id === user)
+                if (userToAddInGroup) {
                     let error = "One of users that you want to add to group are already in group";
                     return next(createError.BadRequest(error));
                 }
@@ -150,12 +151,22 @@ class CheckingGroup {
                 return next(createError.Unauthorized(error));
             }
             for (const user of body.users) {
-                if (!group.members.includes(user)) {
+                const userToRemove = group.members.find((u: any) => u.id === user);
+                if (!userToRemove) {
                     let error = "One of users that you want to remove out of group are already out of group";
                     return next(createError.BadRequest(error));
                 }
             }
             next();
+        } catch (error: any) {
+            console.log(error.message);
+            next(createError.InternalServerError(error.message));
+        }
+    }
+
+    checkUserLeaveGroup = async (req: Request, _res: Response, next: NextFunction) => {
+        try {
+            
         } catch (error: any) {
             console.log(error.message);
             next(createError.InternalServerError(error.message));

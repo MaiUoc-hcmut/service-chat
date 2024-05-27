@@ -230,7 +230,12 @@ class GroupController {
             }
 
             const group = await Group.findOne({ id: id_group });
-            group.members.push(...body.users);
+            for (const user of body.users) {
+                group.members.push({
+                    id: user,
+                    lastMessageSeen: ''
+                });
+            }
 
             await group.save();
 
@@ -256,7 +261,7 @@ class GroupController {
             }
 
             const group = await Group.findOne({ id: id_group });
-            group.members = group.members.filter((member: string) => !body.users.includes(member));
+            group.members = group.members.filter((member: any) => !body.users.includes(member.id));
 
             await group.save();
 
@@ -279,7 +284,7 @@ class GroupController {
                 id: id_group
             });
 
-            group.members = group.members.filter((user: string) => user !== id_user);
+            group.members = group.members.filter((user: any) => user.id !== id_user);
             await group.save();
 
             res.status(200).json(group);
