@@ -7,6 +7,32 @@ const axios = require('axios');
 
 
 class CheckingGroup {
+    checkGetGroup = async (req: Request, _res: Response, next: NextFunction) => {
+        try {
+            const id_group = req.params.groupId;
+            const id_user = req.user?.user.data.id;
+
+            const group = await Group.findOne({
+                id: id_group
+            });
+
+            if (!group) {
+                let error = "Group does not exist!";
+                return next(createError.NotFound(error));
+            }
+
+            const userInGroup = group.members.find((u: any) => u.id === id_user);
+            if (!userInGroup) {
+                let error = "You do not have permission to get this information!";
+                return next(createError.Unauthorized(error));
+            }
+            next();
+        } catch (error: any) {
+            console.log(error.message);
+            next(createError.InternalServerError(error.message));
+        }
+    }
+
     checkGetGroupOfUser = async (req: Request, _res: Response, next: NextFunction) => {
         try {
             

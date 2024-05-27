@@ -42,6 +42,7 @@ router.route('/:groupId/update')
 router.route('/:groupId')
     .get(
         Authorize.verifyUser,
+        CheckingGroup.checkGetGroup,
         GroupController.getGroup
     )
     .delete(
