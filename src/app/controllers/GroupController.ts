@@ -152,7 +152,7 @@ class GroupController {
                                 break;
                             }
 
-                            const teacher = await this.getUserFromAPI(`${process.env.BASE_URL_USER_LOCAL}/teacher/get-teacher-by-id/${member}`);
+                            const teacher = await this.getUserFromAPI(`${process.env.BASE_URL_USER_LOCAL}/teacher/get-teacher-by-id/${member.id}`);
                             if (teacher) {
                                 group.groups.friend = {
                                     id: teacher.data.id,
